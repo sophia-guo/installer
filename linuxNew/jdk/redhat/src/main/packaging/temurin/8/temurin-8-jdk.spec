@@ -27,7 +27,6 @@
 %global src_num 2
 %global sha_src_num 3
 %endif
-
 # Allow for noarch SRPM build
 %ifarch noarch
 %global src_num 0

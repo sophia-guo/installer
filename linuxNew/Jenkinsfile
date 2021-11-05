@@ -16,7 +16,7 @@ pipeline {
                 axes {
                     axis {
                         name 'DISTRO'
-                        values 'Debian', 'RedHat', 'Suse'
+                        values 'RedHat'
                     }
                 }
                 stages {

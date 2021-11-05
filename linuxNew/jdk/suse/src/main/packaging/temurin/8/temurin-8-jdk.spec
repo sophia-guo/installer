@@ -14,19 +14,32 @@
 
 # Map architecture to the expected value in the download URL; Allow for a
 # pre-defined value of vers_arch and use that if it's defined
-#  x86_64 => x64
-#  i668 = x86
-%if %{!?vers_arch:1}0
+
 %ifarch x86_64
 %global vers_arch x64
-%else
-%ifarch %{ix86}
-%global vers_arch x86
-%else
-# Catch-all, use _arch value
-%global vers_arch %{_arch}
+%global vers_arch2 ppc64le
+%global vers_arch3 s390x
+%global src_num 0
+%global sha_src_num 1
 %endif
+%ifarch ppc64le
+%global vers_arch x64
+%global vers_arch2 ppc64le
+%global vers_arch3 s390x
+%global src_num 2
+%global sha_src_num 3
 %endif
+%ifarch s390x
+%global vers_arch x64
+%global vers_arch2 ppc64le
+%global vers_arch3 s390x
+%global src_num 4
+%global sha_src_num 5
+%endif
+# Allow for noarch SRPM build
+%ifarch noarch
+%global src_num 0
+%global sha_src_num 1
 %endif
 
 Name:        temurin-8-jdk
@@ -41,7 +54,7 @@ URL:         https://projects.eclipse.org/projects/adoptium
 Packager:    Eclipse Adoptium Package Maintainers <temurin-dev@eclipse.org>
 
 AutoReqProv: no
-Prefix: %{_libdir}/jvm/%{name}
+Prefix: /usr/lib/jvm/%{name}
 
 BuildRequires:  tar
 BuildRequires:  wget
@@ -49,21 +62,21 @@ BuildRequires:  wget
 Requires: /bin/sh
 Requires: /usr/sbin/alternatives
 Requires: ca-certificates
-Requires: dejavu-fonts
+Requires: dejavu-sans-fonts
 # TODO Bring in libatomic as epxected on Arm7 
 #%ifarch %i#x86
 #Requires: libatomic1.(i?86)
 #%endif
-Requires: libX11-6%{?_isa}
-Requires: libXext6%{?_isa}
-Requires: libXi6%{?_isa}
-Requires: libXrender1%{?_isa}
-Requires: libXtst6%{?_isa}
-Requires: libasound2%{?_isa}
+Requires: libX11%{?_isa}
+Requires: libXext%{?_isa}
+Requires: libXi%{?_isa}
+Requires: libXrender%{?_isa}
+Requires: libXtst%{?_isa}
+Requires: alsa-lib%{?_isa}
 Requires: glibc%{?_isa}
-Requires: libz1%{?_isa}
+Requires: zlib%{?_isa}
 Requires: fontconfig%{?_isa}
-Requires: libfreetype6%{?_isa}
+Requires: freetype%{?_isa}
 
 Provides: java
 Provides: java-8
@@ -80,8 +93,21 @@ Provides: jre-8
 Provides: jre-8-%{java_provides}
 Provides: jre-%{java_provides}
 
+# First architecture (x86_64)
 Source0: %{source_url_base}/jdk%{upstream_version}/OpenJDK8U-jdk_%{vers_arch}_linux_hotspot_%{upstream_version_no_dash}.tar.gz
 Source1: %{source_url_base}/jdk%{upstream_version}/OpenJDK8U-jdk_%{vers_arch}_linux_hotspot_%{upstream_version_no_dash}.tar.gz.sha256.txt
+# Second architecture (ppc64le)
+Source2: %{source_url_base}/jdk%{upstream_version}/OpenJDK8U-jdk_%{vers_arch2}_linux_hotspot_%{upstream_version_no_dash}.tar.gz
+Source3: %{source_url_base}/jdk%{upstream_version}/OpenJDK8U-jdk_%{vers_arch2}_linux_hotspot_%{upstream_version_no_dash}.tar.gz.sha256.txt
+# Third architecture (s390x)
+Source4: %{source_url_base}/jdk%{upstream_version}/OpenJDK8U-jdk_%{vers_arch3}_linux_hotspot_%{upstream_version_no_dash}.tar.gz
+Source5: %{source_url_base}/jdk%{upstream_version}/OpenJDK8U-jdk_%{vers_arch3}_linux_hotspot_%{upstream_version_no_dash}.tar.gz.sha256.txt
+
+# Set the compression format to xz to be compatible with more Red Hat flavours. Newer versions of Fedora use zstd which
+# is not available on CentOS 7, for example. https://github.com/rpm-software-management/rpm/blob/master/macros.in#L353
+# lists the available options.
+%define _source_payload w7.xzdio
+%define _binary_payload w7.xzdio
 
 # Avoid build failures on some distros due to missing build-id in binaries.
 %global debug_package %{nil}
@@ -93,10 +119,10 @@ applications and components using the programming language Java.
 
 %prep
 pushd "%{_sourcedir}"
-sha256sum -c "%SOURCE1"
+sha256sum -c "%{expand:%{SOURCE%{sha_src_num}}}"
 popd
 
-%setup -n jdk%{upstream_version}
+%setup -n jdk%{upstream_version} -T -b %{src_num}
 
 %build
 # noop
@@ -104,7 +130,7 @@ popd
 %install
 mkdir -p %{buildroot}%{prefix}
 cd %{buildroot}%{prefix}
-tar --strip-components=1 -C "%{buildroot}%{prefix}" -xf %{SOURCE0}
+tar --strip-components=1 -C "%{buildroot}%{prefix}" -xf %{expand:%{SOURCE%{src_num}}}
 
 # Strip bundled Freetype and use OS package instead.
 rm -f "%{buildroot}%{prefix}/lib/libfreetype.so"
@@ -112,8 +138,14 @@ rm -f "%{buildroot}%{prefix}/lib/libfreetype.so"
 # Use cacerts included in OS
 rm -f "%{buildroot}%{prefix}/jre/lib/security/cacerts"
 pushd "%{buildroot}%{prefix}/jre/lib/security"
-ln -s /var/lib/ca-certificates/java-cacerts "%{buildroot}%{prefix}/jre/lib/security/cacerts"
+ln -s /etc/pki/java/cacerts "%{buildroot}%{prefix}/jre/lib/security/cacerts"
 popd
+
+# Ensure systemd-tmpfiles-clean does not remove pid files
+# https://bugzilla.redhat.com/show_bug.cgi?id=1704608
+%{__mkdir} -p %{buildroot}/usr/lib/tmpfiles.d
+echo 'x /tmp/hsperfdata_*' > "%{buildroot}/usr/lib/tmpfiles.d/%{name}.conf"
+echo 'x /tmp/.java_pid*' >> "%{buildroot}/usr/lib/tmpfiles.d/%{name}.conf"
 
 %pretrans
 # noop
@@ -218,7 +250,8 @@ fi
 %files
 %defattr(-,root,root)
 %{prefix}
+/usr/lib/tmpfiles.d/%{name}.conf
 
 %changelog
-* Tue Aug 31 2021 Eclipse Adoptium Package Maintainers <temurin-dev@eclipse.org> 8.0.302.0.0.8-1.adopt0
+* Fri Aug 31 2021 Eclipse Adoptium Package Maintainers <temurin-dev@eclipse.org> 8.0.302.0.0.8-1.adopt0
 - Eclipse Temurin 8.0.302-b08 release.
