@@ -32,7 +32,7 @@ rpmdev-setuptree \n\
 # Build all spec files we can find.\n\
 for spec in "$(ls /home/builder/build/generated/packaging/*.spec)"; do\n\
 	spectool -g -R "$spec";\n\
-	rpmbuild -bb "$spec";\n\
+	rpmbuild -bb --target ppc64le "$spec";\n\
 done;\n\
 \n\
 # Copy generated RPMs to destination folder\n\
