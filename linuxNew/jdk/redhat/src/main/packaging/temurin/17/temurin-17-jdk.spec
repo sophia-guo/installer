@@ -17,18 +17,8 @@
 # pre-defined value of vers_arch and use that if it's defined
 #  x86_64 => x64
 #  i668 = x86
-%if %{!?vers_arch:1}0
-%ifarch x86_64
-%global vers_arch x64
-%else
-%ifarch %{ix86}
-%global vers_arch x86
-%else
-# Catch-all, use _arch value
+
 %global vers_arch %{_arch}
-%endif
-%endif
-%endif
 
 Name:        temurin-17-jdk
 Version:     %{spec_version}

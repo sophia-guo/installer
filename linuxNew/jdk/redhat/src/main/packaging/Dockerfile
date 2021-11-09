@@ -30,9 +30,11 @@ set -euxo pipefail\n\
 rpmdev-setuptree \n\
 \n\
 # Build all spec files we can find.\n\
-for spec in "$(ls /home/builder/build/generated/packaging/*.spec)"; do\n\
-	spectool -g -R "$spec";\n\
-	rpmbuild -bb --target ppc64le "$spec";\n\
+for target in "ppc64le s390x x86_64"; do\n\
+	for spec in "$(ls /home/builder/build/generated/packaging/*.spec)"; do\n\
+		spectool -g -R "$spec";\n\
+		rpmbuild -bb --target ppc64le "$spec";\n\
+	done;\n\
 done;\n\
 \n\
 # Copy generated RPMs to destination folder\n\
