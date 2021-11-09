@@ -30,7 +30,6 @@ set -euxo pipefail\n\
 rpmdev-setuptree \n\
 \n\
 # Build all spec files we can find.\n\
-
 targets="x86_64 ppc64le s390x" \n\
 for spec in "$(ls /home/builder/build/generated/packaging/*.spec)"; do\n\
 	spectool -g -R "$spec";\n\

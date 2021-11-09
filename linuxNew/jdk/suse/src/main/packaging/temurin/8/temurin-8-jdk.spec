@@ -18,24 +18,16 @@
 %ifarch x86_64
 %global vers_arch x64
 %global vers_arch2 ppc64le
-%global vers_arch3 s390x
 %global src_num 0
 %global sha_src_num 1
 %endif
 %ifarch ppc64le
 %global vers_arch x64
 %global vers_arch2 ppc64le
-%global vers_arch3 s390x
 %global src_num 2
 %global sha_src_num 3
 %endif
-%ifarch s390x
-%global vers_arch x64
-%global vers_arch2 ppc64le
-%global vers_arch3 s390x
-%global src_num 4
-%global sha_src_num 5
-%endif
+
 # Allow for noarch SRPM build
 %ifarch noarch
 %global src_num 0
@@ -99,15 +91,6 @@ Source1: %{source_url_base}/jdk%{upstream_version}/OpenJDK8U-jdk_%{vers_arch}_li
 # Second architecture (ppc64le)
 Source2: %{source_url_base}/jdk%{upstream_version}/OpenJDK8U-jdk_%{vers_arch2}_linux_hotspot_%{upstream_version_no_dash}.tar.gz
 Source3: %{source_url_base}/jdk%{upstream_version}/OpenJDK8U-jdk_%{vers_arch2}_linux_hotspot_%{upstream_version_no_dash}.tar.gz.sha256.txt
-# Third architecture (s390x)
-Source4: %{source_url_base}/jdk%{upstream_version}/OpenJDK8U-jdk_%{vers_arch3}_linux_hotspot_%{upstream_version_no_dash}.tar.gz
-Source5: %{source_url_base}/jdk%{upstream_version}/OpenJDK8U-jdk_%{vers_arch3}_linux_hotspot_%{upstream_version_no_dash}.tar.gz.sha256.txt
-
-# Set the compression format to xz to be compatible with more Red Hat flavours. Newer versions of Fedora use zstd which
-# is not available on CentOS 7, for example. https://github.com/rpm-software-management/rpm/blob/master/macros.in#L353
-# lists the available options.
-%define _source_payload w7.xzdio
-%define _binary_payload w7.xzdio
 
 # Avoid build failures on some distros due to missing build-id in binaries.
 %global debug_package %{nil}

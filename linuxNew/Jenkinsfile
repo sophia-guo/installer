@@ -15,8 +15,15 @@ pipeline {
                 }
                 axes {
                     axis {
+<<<<<<< Upstream, based on upstream/master
+=======
+                        name 'VERSION'
+                        values '8', '11', '17'
+                    }
+                    axis {
+>>>>>>> 6f218dc target s390x ppc64le on Suse
                         name 'DISTRO'
-                        values 'RedHat'
+                        values 'Debian', 'RedHat', 'Suse'
                     }
                 }
                 stages {
