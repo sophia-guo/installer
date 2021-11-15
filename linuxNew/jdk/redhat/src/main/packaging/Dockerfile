@@ -31,6 +31,7 @@ rpmdev-setuptree \n\
 \n\
 # Build all spec files we can find.\n\
 
+currentPwd="$(pwd)"
 targets="x86_64 ppc64le s390x" \n\
 for spec in "$(ls /home/builder/build/generated/packaging/*.spec)"; do\n\
 	spectool -g -R "$spec";\n\
@@ -38,7 +39,8 @@ for spec in "$(ls /home/builder/build/generated/packaging/*.spec)"; do\n\
 		targets="x86_64 ppc64le" \n\
 	fi \n\
 	for target in $targets; do \n\
-		rpmbuild -bb --target "$target" "$spec";\n\
+		rpmbuild --define "_sourcedir $currentPwd" --define "_specdir $currentPwd" --define "_builddir $currentPwd" --define "_srcrpmdir $currentPwd" --define "_rpmdir $currentPwd" --nodeps -bs "$spec"; \n\
+		rpmbuild --define "_sourcedir $currentPwd" --define "_specdir $currentPwd" --define "_builddir $currentPwd" --define "_srcrpmdir $currentPwd" --define "_rpmdir $currentPwd" --target "$target" --rebuild *.src.rpm;\n\
 	done;\n\
 done;\n\
 \n\
