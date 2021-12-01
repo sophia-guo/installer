@@ -45,6 +45,9 @@ final class RpmFiles {
 			}
 		} catch (IOException x) {
 			throw new UncheckedIOException(x);
+		} catch (PatternSyntaxException x) {
+			System.out.println("No required package need to be tested");
+			System.exit(0);
 		}
 
 		throw new RuntimeException("Could not find file with pattern " + pattern + " in " + outputDirectory.toString());
