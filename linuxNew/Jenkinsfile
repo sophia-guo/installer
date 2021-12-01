@@ -7,7 +7,6 @@ pipeline {
     parameters {
         string(name: 'PRODUCT', defaultValue: 'temurin')
         string(name: 'JDK_SOURCE', defaultValue: 'Adoptium')
-        string(name: 'VERSION', defaultValue: '8')
         booleanParam(name: 'UPLOAD', defaultValue: false, description: 'Tick this box to upload the deb/rpm files to Artifactory')
     }
     stages {
@@ -24,7 +23,12 @@ pipeline {
                         name 'DISTRO'
                         values 'RedHat', 'Suse'
                     }
+                    axis {
+                        name 'VERSION'
+                        values '8', '11', '17'
+                    }
                 }
+
                 stages {
                     stage('Build Installer') {
                         steps {
