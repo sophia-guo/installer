@@ -18,6 +18,7 @@ jvm_home = usr/lib/jvm
 jvm_dir = $(pkg_name)-$(DEB_HOST_ARCH)
 pkg_alias = $(pkg_name)-$(DEB_HOST_ARCH)
 
+
 %:
 	dh $@
 
@@ -78,5 +79,7 @@ override_dh_auto_install:
 		ln -s lib/src.zip "$(d)/$(jvm_home)/$(jvm_dir)/src.zip"; \
 	fi;
 
+override_dh_shlibdeps:
+    dh_shlibdeps -l/lib/powerpc64le-linux-gnu:/usr/lib/powerpc64le-linux-gnu
 override_dh_gencontrol:
 	dh_gencontrol --

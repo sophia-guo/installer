@@ -7,122 +7,25 @@ pipeline {
     parameters {
         string(name: 'PRODUCT', defaultValue: 'temurin')
         string(name: 'JDK_SOURCE', defaultValue: 'Adoptium')
-        string(name: 'VERSION', defaultValue: '8')
+        string(name: 'VERSION', defaultValue: '11')
         booleanParam(name: 'UPLOAD', defaultValue: false, description: 'Tick this box to upload the deb/rpm files to Artifactory')
     }
     stages {
-        stage('Linux-x64 Installers') {
-            matrix {
-                agent {
-                    label NODE_LABEL
-                }
-                tools {
-                    jdk "JDK11"
-                }
-                axes {
-                    axis {
-                        name 'DISTRO'
-                        values 'Debian', 'RedHat', 'Suse'
-                    }
-                }
-                stages {
-                    stage('Build Installer') {
-                        steps {
-                            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                echo "Installer Job for Temurin ${VERSION} - ${DISTRO}"
-                                setup()
-                                dir('linuxNew') {
-                                    buildAndTest()
-                                }
-                                script {
-                                    if (UPLOAD.toBoolean()) {
-                                        uploadArtifacts('amd64')
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-	    }
-        }
-        stage('Run non-x64 Deb packaging in parallel') {
-            parallel {
-                stage('aarch64 Debian packages') {
-                    agent {
-                        label "docker&&linux&&aarch64"
-                    }
-                    tools {
-                        jdk "JDK11"
-                    }
-                    environment {
-                        DISTRO = "Debian"
-                    }
-                    steps {
-                      catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                        echo "Debian Installer Job for Temurin ${VERSION} - ${DISTRO} on aarch64"
-                        setup()
-                        dir('linuxNew') {
-                            buildNoTest()
-                        }
-                        script {
-                            if (UPLOAD.toBoolean()) {
-                                uploadArtifacts('arm64')
-                            }
-                        }
-                      }
-                    }
-                }
-                stage('ppc64le Debian packages') {
-                    agent {
-                        label "docker&&linux&&ppc64le"
-                    }
-                    tools {
-                        jdk "JDK11"
-                    }
-                    environment {
-                        DISTRO = "Debian"
-                    }
-                    steps {
-                        echo "Debian Installer Job for Temurin ${VERSION} - ${DISTRO} on ppc64le"
-                        setup()
-                        dir('linuxNew') {
-                            buildNoTest()
-                        }
-                        script {
-                            if (UPLOAD.toBoolean()) {
-                                uploadArtifacts('ppc64el')
-                            }
-                        }
-                    }
-                }
-                stage('s390x Debian packages') {
-                    when {
-                       expression {
-                          return VERSION != '8'
-                       }
-                    }
-                    agent {
-                        label "docker&&linux&&s390x"
-                    }
-                    tools {
-                        jdk "JDK11"
-                    }
-                    environment {
-                        DISTRO = "Debian"
-                        DOCKER_BUILDKIT = "0"
-                    }
-                    steps {
-                        echo "Debian Installer Job for Temurin ${VERSION} - ${DISTRO} so s390x"
-                        setup()
-                        dir('linuxNew') {
-                            buildNoTest()
-                        }
-                        script {
-                            if (UPLOAD.toBoolean()) {
-                                uploadArtifacts('s390x')
-                            }
-                        }
-                    }
+        stage('ppc64le Debian packages') {
+            agent {
+                label "dockerBuild&&linux&&x64"
+            }
+            tools {
+                jdk "JDK11"
+            }
+            environment {
+                DISTRO = "Debian"
+            }
+            steps {
+                echo "Debian Installer Job for Temurin ${VERSION} - ${DISTRO} on ppc64le"
+                setup()
+                dir('linuxNew') {
+                    buildNoTest()
                 }
             }
         }
@@ -151,15 +54,7 @@ def buildAndTest() {
 }
 
 def buildNoTest() {
-    // Install Adoptium GPG key for RPM signing
-    withCredentials([file(credentialsId: 'adoptium-artifactory-gpg-key', variable: 'GPG_KEY')]) {
-        if (DISTRO != "Debian") {
-            sh("./gradlew packageJdk${DISTRO} --parallel -PPRODUCT=${PRODUCT} -PPRODUCT_VERSION=${VERSION} -PGPG_KEY=${GPG_KEY}")
-        } else {
-            sh("./gradlew packageJdk${DISTRO} --parallel -PPRODUCT=${PRODUCT} -PPRODUCT_VERSION=${VERSION}")
-
-        }
-    }
+    sh("./gradlew packageJdk${DISTRO} --parallel -PPRODUCT=${PRODUCT} -PPRODUCT_VERSION=${VERSION}")
     archiveArtifacts artifacts: '**/build/ospackage/*,**/build/reports/**,**/packageTest/dependencies/deb/*'
 }
 

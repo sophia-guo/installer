@@ -30,7 +30,7 @@ override_dh_auto_install:
 	wget --progress=dot:mega -O jdk.tar.gz $($(DEB_HOST_ARCH)_tarball_url)
 	echo '$($(DEB_HOST_ARCH)_checksum) jdk.tar.gz' > jdk.tar.gz.sha256.txt
 	sha256sum -c jdk.tar.gz.sha256.txt
-
+	
 	# Substitute variables.
 	sed \
 		-e 's/@pkg_alias@/$(pkg_alias)/g' \
@@ -78,5 +78,7 @@ override_dh_auto_install:
 		ln -s lib/src.zip "$(d)/$(jvm_home)/$(jvm_dir)/src.zip"; \
 	fi;
 
+override_dh_shlibdeps:
+	dh_shlibdeps -l/usr/$(DEB_HOST_GNU_TYPE)/lib --dpkg-shlibdeps-params=--ignore-missing-info
 override_dh_gencontrol:
 	dh_gencontrol --
