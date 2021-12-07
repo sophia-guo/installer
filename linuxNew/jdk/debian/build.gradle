@@ -83,6 +83,7 @@ task packageJdkDebian {
 			commandLine "docker", "build",
 				"-t", "adoptium-packages-linux-jdk-debian",
 				"-f", "Dockerfile",
+				"--build-arg", "TARGET=ppc64el"
 				getProjectDir().absolutePath + "/src/main/packaging"
 		}
 
