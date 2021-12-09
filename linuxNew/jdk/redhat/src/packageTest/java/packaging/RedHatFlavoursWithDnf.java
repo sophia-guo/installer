@@ -43,7 +43,7 @@ public class RedHatFlavoursWithDnf implements ArgumentsProvider {
 		 */
 		return Stream.of(
 			Arguments.of("centos", "8"),
-			Arguments.of("fedora", "33"),
+			Arguments.of("fedora", "35"),
 			Arguments.of("oraclelinux", "8")
 		);
 	}

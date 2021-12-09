@@ -1,4 +1,4 @@
-FROM fedora:33
+FROM fedora:35
 
 RUN dnf update -y && dnf install -y rpmdevtools rpm-sign rpmlint gnupg2 wget tar dpkg findutils
 
