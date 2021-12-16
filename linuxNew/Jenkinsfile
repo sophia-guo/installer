@@ -47,35 +47,29 @@ pipeline {
                         steps {
                                 echo "Installer Job for Temurin ${VERSION} - ${DISTRO}"
                                 setup()
-                                dir('linuxNew') {
-                                    buildAndTest(DISTRO, 'x64')
-                                }
-                                script {
-                                    if (UPLOAD.toBoolean()) {
-                                        uploadArtifacts(DISTRO, 'amd64')
-                                    }
-                                }
+                                
                             }
                     }
                 }
             }
         }
         stage('Run non-x64 Deb packaging in parallel') {
+            when {
+                anyOf {
+                    expression { params.DISTRO_FILTER == 'all' }
+                    expression { params.DISTRO_FILTER == 'Debian' }
+                }
+            }
             matrix {
                 tools {
                     jdk "jdk-11.0.13+8"
                 }
-                when { 
-                   allOf {
+                when {
                         anyOf {
                             expression { params.VERSION_FILTER == 'all' }
                             expression { params.VERSION_FILTER == env.VERSION }
                         }
-                        anyOf {
-                            expression { params.DISTRO_FILTER == 'all' }
-                            expression { params.DISTRO_FILTER == 'Debian' }
-                        }
-                    }
+
                 }
                 axes {
                     axis {
@@ -107,22 +101,6 @@ pipeline {
                         steps {
                             echo "Debian Installer Job for Temurin ${VERSION} - on ${ARCH}"
                             setup()
-                            script {
-                                if (ARCH == "s390x") {
-                                    env.DOCKER_BUILDKIT=0
-                                }
-                                if (ARCH == "armv7l") {
-                                    env._JAVA_OPTIONS=""
-                                }
-                            }
-                            dir('linuxNew') {
-                                buildAndTest('Debian', ARCH)
-                            }
-                            script {
-                                if (UPLOAD.toBoolean()) {
-                                    uploadArtifacts('Debian', ARCH)
-                                }
-                            }
                         }
                     }
                 }
