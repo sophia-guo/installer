@@ -34,7 +34,7 @@ final class RpmFiles {
 	}
 
 	static Path hostRpmPath() {
-		return findBuildOutputOnHost(System.getenv("PACKAGE") + "*.x86_64.rpm");
+//		return findBuildOutputOnHost(System.getenv("PACKAGE") + "*.x86_64.rpm");
 		return findBuildOutputOnHost(System.getenv("PACKAGE") + "*.ppc64le.rpm");
 	}
 
