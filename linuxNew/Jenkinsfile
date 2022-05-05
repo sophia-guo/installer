@@ -80,7 +80,7 @@ pipeline {
                 axes {
                     axis {
                         name 'ARCH'
-                        values 'aarch64', 'ppc64le', 's390x', 'armv7l'
+                        values 'aarch64', 's390x'
                     }
                     axis {
                         name 'VERSION'
