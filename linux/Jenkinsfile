@@ -43,7 +43,7 @@ pipeline {
                     exclude {
                         axis {
                             name 'ARCH'
-                            values 'aarch64'
+                            values 'ppc64le'
                         }
                         axis {
                             name 'VERSION'
