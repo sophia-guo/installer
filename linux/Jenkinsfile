@@ -12,54 +12,6 @@ pipeline {
         booleanParam(name: 'UPLOAD', defaultValue: false, description: 'Tick this box to upload the deb/rpm files to Artifactory')
     }
     stages {
-        stage('Linux-x64 Installers') {
-            matrix {
-                agent {
-                    label NODE_LABEL
-                }
-                tools {
-                    jdk "jdk-11.0.13+8"
-                }
-                when {
-                    allOf {
-                        anyOf {
-                            expression { params.VERSION_FILTER == 'all' }
-                            expression { params.VERSION_FILTER == env.VERSION }
-                        }
-                        anyOf {
-                            expression { params.DISTRO_FILTER == 'all' }
-                            expression { params.DISTRO_FILTER == env.DISTRO }
-                        }
-                    }
-                }
-                axes {
-                    axis {
-                        name 'DISTRO'
-                        values 'Debian', 'RedHat', 'Suse'
-                    }
-                    axis {
-                        name 'VERSION'
-                        values '8', '11', '17', '18'
-                    }
-                }
-                stages {
-                    stage('Build Installer') {
-                        steps {
-                                echo "Installer Job for Temurin ${VERSION} - ${DISTRO}"
-                                setup()
-                                dir('linux') {
-                                    buildAndTest(DISTRO, 'x64')
-                                }
-                                script {
-                                    if (UPLOAD.toBoolean()) {
-                                        uploadArtifacts(DISTRO, 'amd64')
-                                    }
-                                }
-                            }
-                    }
-                }
-            }
-        }
         stage('Run non-x64 Deb packaging in parallel') {
             when {
                 anyOf {
@@ -80,7 +32,7 @@ pipeline {
                 axes {
                     axis {
                         name 'ARCH'
-                        values 'aarch64', 'ppc64le', 's390x', 'armv7l'
+                        values 's390x'
                     }
                     axis {
                         name 'VERSION'
