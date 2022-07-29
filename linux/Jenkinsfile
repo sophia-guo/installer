@@ -32,7 +32,7 @@ pipeline {
                 axes {
                     axis {
                         name 'ARCH'
-                        values 's390x'
+                        values 'armv7l'
                     }
                     axis {
                         name 'VERSION'
