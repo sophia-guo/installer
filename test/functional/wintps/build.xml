@@ -45,7 +45,7 @@
 	
 	<target name="dist" depends="init,getWinTPSTest" description="generate the distribution">
 		<copy todir="${DEST}">
-			<fileset dir="${src}" includes="*.xml,*.mk" />
+			<fileset dir="${src}" includes="*.xml,*.sh" />
 		</copy>
 	</target>
 
