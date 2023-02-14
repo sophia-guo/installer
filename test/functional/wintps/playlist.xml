@@ -15,9 +15,7 @@
 <playlist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../TKG/playlist.xsd">
 	<test>
 		<testCaseName>WinTPSTests</testCaseName>
-		<command>export RESULTS_FOLDER_NAME=$(Q)$(REPORTDIR)$(D)report$(Q); \
-		export INPUT_FOLDER=$(Q)$(REPORTDIR)$(D)work$(Q); cd WindowsTPS; \
-		./wrapper/run-tps-win-vagrant.sh; \
+		<command>$(Q)$(TEST_RESROOT)$(D)run.sh; \
 		$(TEST_STATUS)</command>
         <impls>
             <impl>hotspot</impl>
