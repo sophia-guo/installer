@@ -17,4 +17,8 @@ export INPUT_FOLDER=$(Q)$(REPORTDIR)$(D)work$(Q)
 export OTOOL_JDK_VERSION="${JDK_VERSION}"
 export MSI_VENDOR="Adoptium"
 
-./WindowsTPS/wrapper/run-tps-win-vagrant.sh
+curl -X 'GET' \
+  "https://api.adoptium.net/v3/installer/latest/$JDK_VERSION/ga/windows/x64/jdk/hotspot/normal/eclipse?project=jdk" \
+  -H 'accept: */*'
+
+./wrapper/run-tps-win-vagrant.sh
