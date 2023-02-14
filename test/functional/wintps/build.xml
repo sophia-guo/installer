@@ -21,10 +21,10 @@
 	</description>
 
 	<!-- set global properties for this build -->
-	<property name="DEST" value="${BUILD_ROOT}/functional/WinTPS" />
+	<property name="DEST" value="${BUILD_ROOT}/functional/wintps" />
 	
 	<!--Properties for this particular build-->
-	<property name="src" location="./WinTPS" />
+	<property name="src" location="./wintps" />
 	
 	<target name="wintpsTest.check">
 		<condition property="wintpsTestdir.exists">
