@@ -23,4 +23,4 @@ curl -X 'GET' \
   "https://api.adoptium.net/v3/installer/latest/$JDK_VERSION/ga/windows/x64/jdk/hotspot/normal/eclipse?project=jdk" \
   -H 'accept: */*'
 
-./wrapper/run-tps-win-vagrant.sh
+./WindowsTPS/wrapper/run-tps-win-vagrant.sh
