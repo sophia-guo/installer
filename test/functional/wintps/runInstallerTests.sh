@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-export RESULTS_FOLDER_NAME=$(Q)$(REPORTDIR)$(D)report$(Q)
-export INPUT_FOLDER=$(Q)$(REPORTDIR)$(D)work$(Q)
-export OTOOL_JDK_VERSION="${JDK_VERSION}"
+REPORTDIR=$1
+export RESULTS_FOLDER_NAME=$1/report
+export INPUT_FOLDER=$$1/work
+export OTOOL_JDK_VERSION=$1
 export MSI_VENDOR="Adoptium"
 
 echo "Fetch the MSI file"

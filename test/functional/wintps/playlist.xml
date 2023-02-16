@@ -15,7 +15,7 @@
 <playlist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../TKG/playlist.xsd">
 	<test>
 		<testCaseName>WinTPSTests</testCaseName>
-		<command>$(TEST_RESROOT)$(D)runInstallerTests.sh; \
+		<command>$(CD) ${TEST_ROOT};$(TEST_ROOT)$(D)functional$(D)wintps$(D)runInstallerTests.sh $(REPORTDIR) ${JDK_VERSION}; \
 		$(TEST_STATUS)</command>
         <impls>
             <impl>hotspot</impl>
