@@ -24,5 +24,5 @@ echo "Fetch the MSI file"
 curl -X 'GET' \
   "https://api.adoptium.net/v3/installer/latest/$JDK_VERSION/ga/windows/x64/jdk/hotspot/normal/eclipse?project=jdk" \
   -H 'accept: */*'
-
+ls
 ./WindowsTPS/wrapper/run-tps-win-vagrant.sh
