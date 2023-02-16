@@ -15,8 +15,10 @@
 REPORTDIR=$1
 export RESULTS_FOLDER_NAME=$1/report
 export INPUT_FOLDER=$$1/work
-export OTOOL_JDK_VERSION=$1
+export OTOOL_JDK_VERSION=$2
 export MSI_VENDOR="Adoptium"
+
+echo "RESULTS_FOLDER_NAME is $RESULTS_FOLDER_NAME"
 
 echo "Fetch the MSI file"
 curl -X 'GET' \
