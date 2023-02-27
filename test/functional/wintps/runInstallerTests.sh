@@ -28,4 +28,5 @@ echo "RESULTS_FOLDER_NAME is $RESULTS_FOLDER_NAME"
 echo "Fetch the MSI file"
 curl -OLJSks "https://api.adoptium.net/v3/installer/latest/$JDK_VERSION/ga/windows/x64/jdk/hotspot/normal/eclipse?project=jdk"
 mv *.msi $INPUT_FOLDER/
+ls $INPUT_FOLDER
 ./WindowsTPS/wrapper/run-tps-win-vagrant.sh
