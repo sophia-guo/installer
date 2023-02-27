@@ -14,18 +14,17 @@
 set -x
 set -eo pipefail
 
-REPORTDIR=$1
-export RESULTS_FOLDER_NAME=$1/report
-export INPUT_FOLDER=$1/work
+export RESULTS_FOLDER=$1/result
+export INPUT_FOLDER=$1/input
 
-mkdir $RESULTS_FOLDER_NAME
+#mkdir $RESULTS_FOLDER
 mkdir $INPUT_FOLDER
-export OTOOL_JDK_VERSION=$2
+export JDK_VERSION=$2
 export MSI_VENDOR="Adoptium"
-
-echo "RESULTS_FOLDER_NAME is $RESULTS_FOLDER_NAME"
+export CURRENT_USER_NAME='jenkins'
 
 echo "Fetch the MSI file"
 curl -OLJSks "https://api.adoptium.net/v3/installer/latest/$JDK_VERSION/ga/windows/x64/jdk/hotspot/normal/eclipse?project=jdk"
 mv *.msi $INPUT_FOLDER/
+ls $INPUT_FOLDER
 ./WindowsTPS/wrapper/run-tps-win-vagrant.sh
