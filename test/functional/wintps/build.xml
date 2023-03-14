@@ -32,10 +32,19 @@
 		</condition>
 	</target>
 
+	<if>
+		<contains string="${SPEC}" substring="zos"/>
+		<then>
+			<property name="GIT_REPO" value="git@github.com:" />
+		</then>
+		<else>
+			<property name="GIT_REPO" value="https://github.com/" />
+		</else>
+	</if>
 	<target name="getWinTPSTest" depends="wintpsTest.check" unless="wintpsTestdir.exists">
 		<exec executable="git" failonerror="true">
 			<arg value="clone" />
-			<arg value="https://github.com/rh-openjdk/WindowsTPS" />
+			<arg value="${GIT_REPO}rh-openjdk/WindowsTPS" />
 		</exec>
 	</target>
 
